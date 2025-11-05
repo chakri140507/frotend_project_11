@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gender-Responsive DV Support — Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <h1>SafeSpace</h1>
+        <p class="tag">Gender-Responsive Domestic Violence Support</p>
+      </div>
+
+      <div class="controls">
+        <label for="roleSelect" class="sr-only">Select Role</label>
+        <select id="roleSelect" aria-label="Select your role"></select>
+
+        <label for="genderSelect" class="sr-only">Gender Filter</label>
+        <select id="genderSelect" aria-label="Filter resources by gender"></select>
+      </div>
+    </div>
+  </header>
+
+  <main class="container grid">
+    <aside class="sidebar" id="sidebar">
+      <nav>
+        <button class="nav-btn active" data-view="dashboard">Dashboard</button>
+        <button class="nav-btn" data-view="resources">Resources</button>
+        <button class="nav-btn" data-view="requests">Help Requests</button>
+        <button class="nav-btn" data-view="legal">Legal Qs</button>
+        <button class="nav-btn" data-view="admin" id="adminBtn">Admin</button>
+      </nav>
+
+      <section class="quick-card">
+        <h3>Immediate Help</h3>
+        <p class="big">If you are in danger — call local emergency services first.</p>
+        <p class="muted">Hotline (US): <a href="tel:18007997233">1-800-799-7233</a></p>
+      </section>
+
+      <section class="quick-card small">
+        <h4>Safety Tip</h4>
+        <p class="muted">Create a code word with a trusted friend and keep important documents accessible.</p>
+      </section>
+    </aside>
+
+    <section class="main" id="main">
+      <!-- DASHBOARD -->
+      <div class="view" id="view-dashboard">
+        <div class="grid-2">
+          <div class="card">
+            <h2>Gender-Responsive Guidance</h2>
+            <p id="genderGuidance">Select a gender to see tailored guidance.</p>
+            <ul id="guidanceList" class="list"></ul>
+          </div>
+
+          <div class="card">
+            <h2>Quick Actions</h2>
+            <div class="actions">
+              <button id="newRequestBtn">Submit Help Request</button>
+              <button id="newQuestionBtn">Ask Legal Question</button>
+            </div>
+            <div class="stats" id="stats">
+              <!-- counts populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Latest Resources</h3>
+          <div id="latestResources" class="resource-list"></div>
+        </div>
+      </div>
+
+      <!-- RESOURCES -->
+      <div class="view hidden" id="view-resources">
+        <div class="toolbar">
+          <input id="resourceSearch" placeholder="Search resources..." />
+          <button id="addResourceBtn">Add Resource</button>
+        </div>
+        <div id="resourcesContainer" class="resource-grid"></div>
+      </div>
+
+      <!-- REQUESTS -->
+      <div class="view hidden" id="view-requests">
+        <div class="toolbar">
+          <input id="requestSearch" placeholder="Search help requests..." />
+          <select id="requestFilter">
+            <option value="">All statuses</option>
+            <option value="new">New</option>
+            <option value="in-progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
+        <div id="requestsContainer"></div>
+      </div>
+
+      <!-- LEGAL Qs -->
+      <div class="view hidden" id="view-legal">
+        <div class="toolbar">
+          <input id="legalSearch" placeholder="Search legal questions..." />
+        </div>
+        <div id="legalContainer"></div>
+      </div>
+
+      <!-- ADMIN -->
+      <div class="view hidden" id="view-admin">
+        <div class="card">
+          <h2>Admin Panel</h2>
+          <p class="muted">Manage users, resources and clear database for testing.</p>
+          <div class="admin-actions">
+            <button id="seedBtn">Reset to Default Data</button>
+            <button id="clearBtn" class="danger">Clear Local DB</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Users</h3>
+          <div id="usersContainer"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODALS (hidden by default) -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true"></div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> SafeSpace • Designed for gender-responsive support</p>
+    </div>
+  </footer>
+
+  <script src="sprit.js" defer></script>
+</body>
+</html>
