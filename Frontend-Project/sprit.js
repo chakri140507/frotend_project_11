@@ -1,17 +1,8 @@
-/* Simple professional JS app for gender-responsive DV support
-   - Local DB stored at "dv-db"
-   - Role saved at "dv-role"
-   - Gender filter saved at "dv-gender"
-   - Cross-tab sync via storage event
-*/
 
-/* ---------------------- Utilities ---------------------- */
 function uid(prefix = "id") {
   return `${prefix}-${Math.random().toString(36).slice(2,9)}`;
 }
 const now = () => new Date().toISOString();
-
-/* ---------------------- Initial DB ---------------------- */
 const initialDB = {
   users: [
     { id: "u-admin", name: "Admin", role: "Admin" },
@@ -19,7 +10,7 @@ const initialDB = {
     { id: "u-l-1", name: "Legal Advisor", role: "Legal Advisor" }
   ],
   content: {
-    // gender-aware resources
+
     legalResources: [
       { id: "lr-1", gender: "female", title: "Women: Legal Rights & Protection Orders", url: "https://www.thehotline.org/", description: "Overview of protections, orders and seeking counsel." },
       { id: "lr-2", gender: "male", title: "Men: Legal Assistance & Shelter Info", url: "#", description: "Legal support tailored for male survivors, including confidentiality." },
@@ -37,8 +28,6 @@ const initialDB = {
   helpRequests: [],
   legalQuestions: []
 };
-
-/* ---------------------- Storage helpers ---------------------- */
 const DB_KEY = "dv-db";
 const ROLE_KEY = "dv-role";
 const GENDER_KEY = "dv-gender";
@@ -56,17 +45,14 @@ function saveDB(db) {
   localStorage.setItem(DB_KEY, JSON.stringify(db));
 }
 
-/* ---------------------- App State ---------------------- */
-let db = loadDB();
 
-/* ---------------------- DOM refs ---------------------- */
+let db = loadDB();
 const roleSelect = document.getElementById("roleSelect");
 const genderSelect = document.getElementById("genderSelect");
 const navButtons = Array.from(document.querySelectorAll(".nav-btn"));
 const views = Array.from(document.querySelectorAll(".view"));
 const modal = document.getElementById("modal");
 
-/* main elements */
 const guidanceEl = document.getElementById("genderGuidance");
 const guidanceList = document.getElementById("guidanceList");
 const latestResources = document.getElementById("latestResources");
@@ -76,23 +62,22 @@ const requestsContainer = document.getElementById("requestsContainer");
 const legalContainer = document.getElementById("legalContainer");
 const usersContainer = document.getElementById("usersContainer");
 
-/* inputs */
+
 const resourceSearch = document.getElementById("resourceSearch");
 const requestSearch = document.getElementById("requestSearch");
 const requestFilter = document.getElementById("requestFilter");
 const legalSearch = document.getElementById("legalSearch");
 
-/* buttons */
+
 const newRequestBtn = document.getElementById("newRequestBtn");
 const newQuestionBtn = document.getElementById("newQuestionBtn");
 const addResourceBtn = document.getElementById("addResourceBtn");
 const seedBtn = document.getElementById("seedBtn");
 const clearBtn = document.getElementById("clearBtn");
 
-/* misc */
 document.getElementById("year").textContent = new Date().getFullYear();
 
-/* ---------------------- Init Selects ---------------------- */
+
 const ROLES = ["Victim/Survivor", "Counsellor", "Legal Advisor", "Admin"];
 const GENDERS = [
   { id: "all", label: "All" },
@@ -114,18 +99,18 @@ GENDERS.forEach(g => {
   genderSelect.appendChild(opt);
 });
 
-/* restore saved role & gender */
+
 roleSelect.value = localStorage.getItem(ROLE_KEY) || "Victim/Survivor";
 genderSelect.value = localStorage.getItem(GENDER_KEY) || "all";
 
-/* ---------------------- Helpers ---------------------- */
+
 function getCurrentRole(){ return roleSelect.value; }
 function getCurrentGender(){ return genderSelect.value; }
 
 function openView(name){
   views.forEach(v => v.classList.toggle("hidden", !v.id.endsWith(name)));
   navButtons.forEach(b => b.classList.toggle("active", b.dataset.view === name));
-  // hide admin if not admin role
+
   document.getElementById("adminBtn").style.display = getCurrentRole() === "Admin" ? "" : "none";
 }
 
@@ -138,7 +123,7 @@ function showModal(html){
 }
 function closeModal(){ modal.classList.add("hidden"); modal.innerHTML = ""; }
 
-/* simple templating */
+
 function el(tag, attrs = {}, children = []) {
   const e = document.createElement(tag);
   Object.entries(attrs).forEach(([k,v]) => {
@@ -152,8 +137,6 @@ function el(tag, attrs = {}, children = []) {
   });
   return e;
 }
-
-/* ---------------------- Rendering ---------------------- */
 
 function renderGuidance(){
   const g = getCurrentGender();
@@ -205,7 +188,7 @@ function renderStats(){
   `;
 }
 
-/* RESOURCES VIEW */
+
 function renderResources(filterText = ""){
   const container = resourcesContainer;
   container.innerHTML = "";
@@ -236,7 +219,7 @@ function renderResources(filterText = ""){
   });
 }
 
-/* REQUESTS VIEW */
+
 function renderRequests(filterText = "", statusFilter = ""){
   const container = requestsContainer;
   container.innerHTML = "";
@@ -257,7 +240,7 @@ function renderRequests(filterText = "", statusFilter = ""){
     const status = el("div", { class: "status-pill" }, [r.status]);
     right.appendChild(status);
 
-    // role-based actions
+  
     const actions = el("div", { class: "actions" }, []);
     if (["Admin","Counsellor"].includes(getCurrentRole())) {
       const inprog = el("button", {}, ["Mark In Progress"]);
@@ -273,7 +256,7 @@ function renderRequests(filterText = "", statusFilter = ""){
   });
 }
 
-/* LEGAL Qs */
+
 function renderLegal(query = ""){
   const container = legalContainer;
   container.innerHTML = "";
@@ -300,7 +283,7 @@ function renderLegal(query = ""){
   });
 }
 
-/* USERS (admin) */
+
 function renderUsers(){
   usersContainer.innerHTML = "";
   db.users.forEach(u => {
@@ -311,7 +294,7 @@ function renderUsers(){
   });
 }
 
-/* ---------------------- Data mutations ---------------------- */
+
 function addHelpRequest(fromName, message){
   db.helpRequests.push({
     id: uid("req"),
@@ -342,9 +325,9 @@ function deleteResource(id){
   saveDB(db); refreshUI();
 }
 
-/* editing */
+
 function openEditResource(id){
-  // find resource
+ 
   const all = [...db.content.legalResources, ...db.content.healthRisks, ...db.content.supportServices];
   const r = all.find(x => x.id === id);
   if (!r) return alert("Resource not found");
@@ -399,7 +382,7 @@ function openAnswerModal(qid){
   };
 }
 
-/* Add resource modal */
+
 function openAddResource(){
   showModal(`
     <h3>Add Resource</h3>
@@ -436,7 +419,6 @@ function openAddResource(){
   };
 }
 
-/* Submit help request modal */
 function openRequestModal(){
   showModal(`
     <h3>Submit Help Request</h3>
@@ -456,7 +438,7 @@ function openRequestModal(){
   };
 }
 
-/* Submit legal question modal */
+
 function openLegalModal(){
   showModal(`
     <h3>Ask a Legal Question</h3>
@@ -476,7 +458,7 @@ function openLegalModal(){
   };
 }
 
-/* ---------------------- Admin actions ---------------------- */
+
 function seedDefault(){
   db = structuredClone(initialDB);
   saveDB(db); refreshUI();
@@ -488,10 +470,9 @@ function clearDB(){
   refreshUI();
 }
 
-/* ---------------------- Misc ---------------------- */
+
 function escapeHtml(s){ return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
 
-/* ---------------------- Refresh UI ---------------------- */
 function refreshUI(){
   renderGuidance();
   renderLatestResources();
@@ -502,15 +483,13 @@ function refreshUI(){
   renderUsers();
 }
 
-/* ---------------------- Event wiring ---------------------- */
-/* navigation */
+
 navButtons.forEach(b => b.addEventListener("click", () => openView(b.dataset.view)));
 openView("dashboard");
 
-/* selects */
 roleSelect.addEventListener("change", () => {
   localStorage.setItem(ROLE_KEY, roleSelect.value);
-  // admin button show/hide
+ 
   document.getElementById("adminBtn").style.display = getCurrentRole() === "Admin" ? "" : "none";
   refreshUI();
 });
@@ -519,13 +498,13 @@ genderSelect.addEventListener("change", () => {
   refreshUI();
 });
 
-/* search & filters */
+
 resourceSearch.addEventListener("input", () => renderResources(resourceSearch.value));
 requestSearch.addEventListener("input", () => renderRequests(requestSearch.value, requestFilter.value));
 requestFilter.addEventListener("change", () => renderRequests(requestSearch.value, requestFilter.value));
 legalSearch.addEventListener("input", () => renderLegal(legalSearch.value));
 
-/* buttons */
+
 newRequestBtn.addEventListener("click", openRequestModal);
 newQuestionBtn.addEventListener("click", openLegalModal);
 addResourceBtn.addEventListener("click", () => {
@@ -538,10 +517,10 @@ seedBtn.addEventListener("click", () => {
 });
 clearBtn.addEventListener("click", clearDB);
 
-/* modal close on ESC */
+
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
-/* storage sync across tabs */
+
 window.addEventListener("storage", (e) => {
   if (e.key === DB_KEY) {
     db = loadDB(); refreshUI();
@@ -554,9 +533,9 @@ window.addEventListener("storage", (e) => {
   }
 });
 
-/* page-ready */
+
 (function init(){
-  // Render initial content
+  
   renderGuidance();
   renderLatestResources();
   renderStats();
@@ -564,6 +543,7 @@ window.addEventListener("storage", (e) => {
   renderRequests();
   renderLegal();
   renderUsers();
-  // hide admin nav unless admin
+ 
   document.getElementById("adminBtn").style.display = getCurrentRole() === "Admin" ? "" : "none";
 })();
+
